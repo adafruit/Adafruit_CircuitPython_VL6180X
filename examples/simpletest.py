@@ -1,7 +1,7 @@
 # Demo of reading the range and lux from the VL6180x distance sensor and
 # printing it every second.
 # Author: Tony DiCola
-import tim
+import time
 
 import board
 import busio
