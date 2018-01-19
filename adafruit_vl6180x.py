@@ -262,7 +262,7 @@ class VL6180X:
                                       address & 0xFF]),
                                stop=False)
             result = bytearray(1)
-            self._device.read_into(result)
+            self._device.readinto(result)
             return result[0]
 
     def _read_16(self, address):
@@ -273,5 +273,5 @@ class VL6180X:
                                       address & 0xFF]),
                                stop=False)
             result = bytearray(2)
-            self._device.read_into(result)
+            self._device.readinto(result)
             return (result[0] << 8) | result[1]
