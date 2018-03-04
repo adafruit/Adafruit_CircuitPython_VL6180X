@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 """
-`Adafruit_VL6180X`
+`adafruit_vl6180x`
 ====================================================
 
 CircuitPython module for the VL6180X distance sensor.  See
