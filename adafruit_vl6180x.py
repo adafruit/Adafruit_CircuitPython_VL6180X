@@ -20,13 +20,27 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 """
-`Adafruit_VL6180X`
+`adafruit_vl6180x`
 ====================================================
 
 CircuitPython module for the VL6180X distance sensor.  See
 examples/simpletest.py for a demo of the usage.
 
 * Author(s): Tony DiCola
+
+Implementation Notes
+--------------------
+
+**Hardware:**
+
+* Adafruit `VL6180X Time of Flight Distance Ranging Sensor (VL6180)
+  <https://www.adafruit.com/product/3316>`_ (Product ID: 3316)
+
+**Software and Dependencies:**
+
+* Adafruit CircuitPython firmware for the ESP8622 and M0-based boards:
+  https://github.com/adafruit/circuitpython/releases
+* Adafruit's Bus Device library: https://github.com/adafruit/Adafruit_CircuitPython_BusDevice
 """
 from micropython import const
 
@@ -81,11 +95,13 @@ ERROR_RANGEOFLOW   = const(15)
 class VL6180X:
     """Create an instance of the VL6180X distance sensor.  You must pass in
     the following parameters:
-    - i2c: An instance of the I2C bus connected to the sensor.
+
+    :param i2c: An instance of the I2C bus connected to the sensor.
 
     Optionally you can specify:
-    - address: The I2C address of the sensor.  If not specified the sensor's
-               default value will be assumed.
+
+    :param address: The I2C address of the sensor.  If not specified the sensor's
+                    default value will be assumed.
     """
 
     def __init__(self, i2c, address=_VL6180X_DEFAULT_I2C_ADDR):
@@ -169,6 +185,7 @@ class VL6180X:
     def range_status(self):
         """Retrieve the status/error from a previous range read.  This will
         return a constant value such as:
+
         - ERROR_NONE - No error
         - ERROR_SYSERR_1 - System error 1 (see datasheet)
         - ERROR_SYSERR_5 - System error 5 (see datasheet)
