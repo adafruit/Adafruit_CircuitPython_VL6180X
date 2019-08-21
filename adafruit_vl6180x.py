@@ -266,29 +266,23 @@ class VL6180X:
     def _write_16(self, address, data):
         # Write a 16-bit big endian value to the specified 16-bit register
         # address.
-        with self._device:
-            self._device.write(bytes([(address >> 8) & 0xFF,
-                                      address & 0xFF,
-                                      (data >> 8) & 0xFF,
-                                      data & 0xFF]))
+        with self._device as i2c:
+            i2c.write(bytes([(address >> 8) & 0xFF,
+                             address & 0xFF,
+                             (data >> 8) & 0xFF,
+                             data & 0xFF]))
 
     def _read_8(self, address):
         # Read and return a byte from the specified 16-bit register address.
-        with self._device:
-            self._device.write(bytes([(address >> 8) & 0xFF,
-                                      address & 0xFF]),
-                               stop=False)
+        with self._device as i2c:
             result = bytearray(1)
-            self._device.readinto(result)
+            i2c.write_then_readinto(bytes([(address >> 8) & 0xFF, address & 0xFF]), result)
             return result[0]
 
     def _read_16(self, address):
         # Read and return a 16-bit unsigned big endian value read from the
         # specified 16-bit register address.
-        with self._device:
-            self._device.write(bytes([(address >> 8) & 0xFF,
-                                      address & 0xFF]),
-                               stop=False)
+        with self._device as i2c:
             result = bytearray(2)
-            self._device.readinto(result)
+            i2c.write_then_readinto(bytes([(address >> 8) & 0xFF, address & 0xFF]), result)
             return (result[0] << 8) | result[1]
