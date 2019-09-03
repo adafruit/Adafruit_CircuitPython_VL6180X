@@ -276,7 +276,8 @@ class VL6180X:
         # Read and return a byte from the specified 16-bit register address.
         with self._device as i2c:
             result = bytearray(1)
-            i2c.write_then_readinto(bytes([(address >> 8) & 0xFF, address & 0xFF]), result)
+            i2c.write(bytes([(address >> 8) & 0xFF, address & 0xFF]))
+            i2c.readinto(result)
             return result[0]
 
     def _read_16(self, address):
@@ -284,5 +285,6 @@ class VL6180X:
         # specified 16-bit register address.
         with self._device as i2c:
             result = bytearray(2)
-            i2c.write_then_readinto(bytes([(address >> 8) & 0xFF, address & 0xFF]), result)
+            i2c.write(bytes([(address >> 8) & 0xFF, address & 0xFF]))
+            i2c.readinto(result)
             return (result[0] << 8) | result[1]
