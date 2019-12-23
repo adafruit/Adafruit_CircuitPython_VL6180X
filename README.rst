@@ -10,8 +10,8 @@ Introduction
     :target: https://discord.gg/nBQh6qu
     :alt: Discord
 
-.. image:: https://travis-ci.com/adafruit/Adafruit_CircuitPython_VL6180X.svg?branch=master
-    :target: https://travis-ci.com/adafruit/Adafruit_CircuitPython_VL6180X
+.. image:: https://github.com/adafruit/Adafruit_CircuitPython_VL6180X/workflows/Build%20CI/badge.svg
+    :target: https://github.com/adafruit/Adafruit_CircuitPython_VL6180X/actions/
     :alt: Build Status
 
 CircuitPython module for the VL6180X distance sensor.  See
