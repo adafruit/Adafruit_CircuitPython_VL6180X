@@ -19,7 +19,7 @@ sensor = adafruit_vl6180x.VL6180X(i2c)
 while True:
     # Read the range in millimeters and print it.
     range_mm = sensor.range
-    print('Range: {0}mm'.format(range_mm))
+    print("Range: {0}mm".format(range_mm))
     # Read the light, note this requires specifying a gain value:
     # - adafruit_vl6180x.ALS_GAIN_1 = 1x
     # - adafruit_vl6180x.ALS_GAIN_1_25 = 1.25x
@@ -30,6 +30,6 @@ while True:
     # - adafruit_vl6180x.ALS_GAIN_20 = 20x
     # - adafruit_vl6180x.ALS_GAIN_40 = 40x
     light_lux = sensor.read_lux(adafruit_vl6180x.ALS_GAIN_1)
-    print('Light (1x gain): {0}lux'.format(light_lux))
+    print("Light (1x gain): {0}lux".format(light_lux))
     # Delay for a second.
     time.sleep(1.0)
