@@ -51,7 +51,6 @@ __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_VL6180X.git"
 
 
-# pylint: disable=bad-whitespace
 # Internal constants:
 _VL6180X_DEFAULT_I2C_ADDR = const(0x29)
 _VL6180X_REG_IDENTIFICATION_MODEL_ID = const(0x000)
@@ -89,7 +88,6 @@ ERROR_RAWUFLOW = const(12)
 ERROR_RAWOFLOW = const(13)
 ERROR_RANGEUFLOW = const(14)
 ERROR_RANGEOFLOW = const(15)
-# pylint: enable=bad-whitespace
 
 
 class VL6180X:
