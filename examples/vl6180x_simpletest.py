@@ -1,6 +1,9 @@
+# SPDX-FileCopyrightText: 2018 Tony DiCola for Adafruit Industries
+# SPDX-License-Identifier: MIT
+
 # Demo of reading the range and lux from the VL6180x distance sensor and
 # printing it every second.
-# Author: Tony DiCola
+
 import time
 
 import board
