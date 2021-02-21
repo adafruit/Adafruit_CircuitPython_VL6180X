@@ -149,7 +149,7 @@ class VL6180X:
         elif gain == ALS_GAIN_1_25:
             lux /= 1.25
         elif gain == ALS_GAIN_1_67:
-            lux /= 1.76
+            lux /= 1.67
         elif gain == ALS_GAIN_2_5:
             lux /= 2.5
         elif gain == ALS_GAIN_5:
@@ -159,7 +159,7 @@ class VL6180X:
         elif gain == ALS_GAIN_20:
             lux /= 20
         elif gain == ALS_GAIN_40:
-            lux /= 20
+            lux /= 40
         lux *= 100
         lux /= 100  # integration time in ms
         return lux
