@@ -58,6 +58,11 @@ Usage Example
 
 See examples/vl6180x_simpletest.py for a demo of the usage.
 
+Documentation
+=============
+
+API documentation for this library can be found on `Read the Docs <https://circuitpython.readthedocs.io/projects/vl6180x/en/latest/>`_.
+
 Contributing
 ============
 
