@@ -27,7 +27,7 @@ Implementation Notes
 """
 from micropython import const
 
-import adafruit_bus_device.i2c_device as i2c_device
+from adafruit_bus_device import i2c_device
 
 
 __version__ = "0.0.0-auto.0"
@@ -129,8 +129,7 @@ class VL6180X:
         self._write_8(_VL6180X_REG_SYSALS_INTEGRATION_PERIOD_HI, 0)
         self._write_8(_VL6180X_REG_SYSALS_INTEGRATION_PERIOD_LO, 100)
         # analog gain
-        if gain > ALS_GAIN_40:
-            gain = ALS_GAIN_40
+        gain = min(gain, ALS_GAIN_40)
         self._write_8(_VL6180X_REG_SYSALS_ANALOGUE_GAIN, 0x40 | gain)
         # start ALS
         self._write_8(_VL6180X_REG_SYSALS_START, 0x1)
