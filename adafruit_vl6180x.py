@@ -98,7 +98,6 @@ class VL6180X:
             raise RuntimeError("Could not find VL6180X, is it connected and powered?")
         self._load_settings()
         self._write_8(_VL6180X_REG_SYSTEM_FRESH_OUT_OF_RESET, 0x00)
-        self._offset = self._read_8(_VL6180X_REG_SYSRANGE_PART_TO_PART_RANGE_OFFSET)
 
     @property
     def range(self) -> int:
