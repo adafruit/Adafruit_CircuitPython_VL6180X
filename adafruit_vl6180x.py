@@ -92,12 +92,13 @@ class VL6180X:
                     default value will be assumed.
     """
 
-    def __init__(self, i2c: I2C, address: int = _VL6180X_DEFAULT_I2C_ADDR) -> None:
+    def __init__(self, i2c: I2C, address: int = _VL6180X_DEFAULT_I2C_ADDR, offset: int = 0) -> None:
         self._device = i2c_device.I2CDevice(i2c, address)
         if self._read_8(_VL6180X_REG_IDENTIFICATION_MODEL_ID) != 0xB4:
             raise RuntimeError("Could not find VL6180X, is it connected and powered?")
         self._load_settings()
         self._write_8(_VL6180X_REG_SYSTEM_FRESH_OUT_OF_RESET, 0x00)
+        self.offset = offset
 
     @property
     def range(self) -> int:
