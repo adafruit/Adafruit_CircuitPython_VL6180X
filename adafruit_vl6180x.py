@@ -118,12 +118,12 @@ class VL6180X:
         return range_
 
     @property
-    def manual_offset(self) -> int:
+    def offset(self) -> int:
         """Read and sets the manual offset for the sensor, in millimeters"""
         return self._offset
         
-    @manual_offset.setter
-    def manual_offset(self, offset: int) -> None:
+    @offset.setter
+    def offset(self, offset: int) -> None:
         if not -128 <= offset <= 127:
             raise ValueError("Offset out of range (-128 ... 127)")
         if offset < 0:
