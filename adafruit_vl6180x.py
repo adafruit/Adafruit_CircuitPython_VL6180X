@@ -29,6 +29,12 @@ from micropython import const
 
 from adafruit_bus_device import i2c_device
 
+try:
+    import typing  # pylint: disable=unused-import
+    from busio import I2C
+except ImportError:
+    pass
+
 
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_VL6180X.git"
@@ -85,7 +91,7 @@ class VL6180X:
                     default value will be assumed.
     """
 
-    def __init__(self, i2c, address=_VL6180X_DEFAULT_I2C_ADDR):
+    def __init__(self, i2c: I2C, address: int = _VL6180X_DEFAULT_I2C_ADDR) -> None:
         self._device = i2c_device.I2CDevice(i2c, address)
         if self._read_8(_VL6180X_REG_IDENTIFICATION_MODEL_ID) != 0xB4:
             raise RuntimeError("Could not find VL6180X, is it connected and powered?")
@@ -93,7 +99,7 @@ class VL6180X:
         self._write_8(_VL6180X_REG_SYSTEM_FRESH_OUT_OF_RESET, 0x00)
 
     @property
-    def range(self):
+    def range(self) -> int:
         """Read the range of an object in front of sensor and return it in mm."""
         # wait for device to be ready for range measurement
         while not self._read_8(_VL6180X_REG_RESULT_RANGE_STATUS) & 0x01:
@@ -109,7 +115,7 @@ class VL6180X:
         self._write_8(_VL6180X_REG_SYSTEM_INTERRUPT_CLEAR, 0x07)
         return range_
 
-    def read_lux(self, gain):
+    def read_lux(self, gain: int) -> float:
         """Read the lux (light value) from the sensor and return it.  Must
         specify the gain value to use for the lux reading:
         - ALS_GAIN_1 = 1x
@@ -164,7 +170,7 @@ class VL6180X:
         return lux
 
     @property
-    def range_status(self):
+    def range_status(self) -> int:
         """Retrieve the status/error from a previous range read.  This will
         return a constant value such as:
 
@@ -182,7 +188,7 @@ class VL6180X:
         """
         return self._read_8(_VL6180X_REG_RESULT_RANGE_STATUS) >> 4
 
-    def _load_settings(self):
+    def _load_settings(self) -> None:
         # private settings from page 24 of app note
         self._write_8(0x0207, 0x01)
         self._write_8(0x0208, 0x01)
@@ -238,12 +244,12 @@ class VL6180X:
         self._write_8(0x0014, 0x24)  # Configures interrupt on 'New Sample
         # Ready threshold event'
 
-    def _write_8(self, address, data):
+    def _write_8(self, address: int, data: int) -> None:
         # Write 1 byte of data from the specified 16-bit register address.
         with self._device:
             self._device.write(bytes([(address >> 8) & 0xFF, address & 0xFF, data]))
 
-    def _write_16(self, address, data):
+    def _write_16(self, address: int, data: int) -> None:
         # Write a 16-bit big endian value to the specified 16-bit register
         # address.
         with self._device as i2c:
@@ -258,7 +264,7 @@ class VL6180X:
                 )
             )
 
-    def _read_8(self, address):
+    def _read_8(self, address: int) -> int:
         # Read and return a byte from the specified 16-bit register address.
         with self._device as i2c:
             result = bytearray(1)
@@ -266,7 +272,7 @@ class VL6180X:
             i2c.readinto(result)
             return result[0]
 
-    def _read_16(self, address):
+    def _read_16(self, address: int) -> int:
         # Read and return a 16-bit unsigned big endian value read from the
         # specified 16-bit register address.
         with self._device as i2c:
