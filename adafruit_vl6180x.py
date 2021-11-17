@@ -55,6 +55,7 @@ _VL6180X_REG_RESULT_ALS_VAL = const(0x050)
 _VL6180X_REG_RESULT_RANGE_VAL = const(0x062)
 _VL6180X_REG_RESULT_RANGE_STATUS = const(0x04D)
 _VL6180X_REG_RESULT_INTERRUPT_STATUS_GPIO = const(0x04F)
+_VL6180X_REG_SYSRANGE_PART_TO_PART_RANGE_OFFSET = const(0x024)
 
 # User-facing constants:
 ALS_GAIN_1 = const(0x06)
@@ -97,6 +98,7 @@ class VL6180X:
             raise RuntimeError("Could not find VL6180X, is it connected and powered?")
         self._load_settings()
         self._write_8(_VL6180X_REG_SYSTEM_FRESH_OUT_OF_RESET, 0x00)
+        self._offset = self._read_8(_VL6180X_REG_SYSRANGE_PART_TO_PART_RANGE_OFFSET)
 
     @property
     def range(self) -> int:
@@ -114,6 +116,20 @@ class VL6180X:
         # clear interrupt
         self._write_8(_VL6180X_REG_SYSTEM_INTERRUPT_CLEAR, 0x07)
         return range_
+
+    @property
+    def manual_offset(self) -> int:
+        """Read and sets the manual offset for the sensor, in millimeters"""
+        return self._offset
+        
+    @manual_offset.setter
+    def manual_offset(self, offset: int) -> None:
+        if not -128 <= offset <= 127:
+            raise ValueError("Offset out of range (-128 ... 127)")
+        if offset < 0:
+            offset = ~ (abs(offset) - 1)
+        self._write_8(_VL6180X_REG_SYSRANGE_PART_TO_PART_RANGE_OFFSET, offset)
+        self._offset = offset
 
     def read_lux(self, gain: int) -> float:
         """Read the lux (light value) from the sensor and return it.  Must
