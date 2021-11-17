@@ -92,7 +92,9 @@ class VL6180X:
                     default value will be assumed.
     """
 
-    def __init__(self, i2c: I2C, address: int = _VL6180X_DEFAULT_I2C_ADDR, offset: int = 0) -> None:
+    def __init__(
+        self, i2c: I2C, address: int = _VL6180X_DEFAULT_I2C_ADDR, offset: int = 0
+    ) -> None:
         self._device = i2c_device.I2CDevice(i2c, address)
         if self._read_8(_VL6180X_REG_IDENTIFICATION_MODEL_ID) != 0xB4:
             raise RuntimeError("Could not find VL6180X, is it connected and powered?")
@@ -121,13 +123,13 @@ class VL6180X:
     def offset(self) -> int:
         """Read and sets the manual offset for the sensor, in millimeters"""
         return self._offset
-        
+
     @offset.setter
     def offset(self, offset: int) -> None:
         if not -128 <= offset <= 127:
             raise ValueError("Offset out of range (-128 ... 127)")
         if offset < 0:
-            offset = ~ (abs(offset) - 1)
+            offset = ~(abs(offset) - 1)
         self._write_8(_VL6180X_REG_SYSRANGE_PART_TO_PART_RANGE_OFFSET, offset)
         self._offset = offset
 
