@@ -25,10 +25,10 @@ Implementation Notes
   https://github.com/adafruit/circuitpython/releases
 * Adafruit's Bus Device library: https://github.com/adafruit/Adafruit_CircuitPython_BusDevice
 """
+import struct
 from micropython import const
 
 from adafruit_bus_device import i2c_device
-import struct
 
 try:
     import typing  # pylint: disable=unused-import
