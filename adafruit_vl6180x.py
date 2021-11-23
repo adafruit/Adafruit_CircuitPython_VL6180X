@@ -28,6 +28,7 @@ Implementation Notes
 from micropython import const
 
 from adafruit_bus_device import i2c_device
+import struct
 
 try:
     import typing  # pylint: disable=unused-import
@@ -126,11 +127,7 @@ class VL6180X:
 
     @offset.setter
     def offset(self, offset: int) -> None:
-        if not -128 <= offset <= 127:
-            raise ValueError("Offset out of range (-128 ... 127)")
-        if offset < 0:
-            offset = ~(abs(offset) - 1)
-        self._write_8(_VL6180X_REG_SYSRANGE_PART_TO_PART_RANGE_OFFSET, offset)
+        self._write_8(_VL6180X_REG_SYSRANGE_PART_TO_PART_RANGE_OFFSET, struct.pack("b", offset)[0])
         self._offset = offset
 
     def read_lux(self, gain: int) -> float:
