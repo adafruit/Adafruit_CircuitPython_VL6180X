@@ -26,7 +26,7 @@ for msmt in range(10):
     range_mm = sensor.range
     measurements.append(range_mm)
     time.sleep(1.0)
-average_msmt = sum(measurements)/10
+average_msmt = sum(measurements) / 10
 
 # Calculate the offset required:
 calibration_offset = 50 - average_msmt
