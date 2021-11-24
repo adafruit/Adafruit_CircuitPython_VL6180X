@@ -25,9 +25,16 @@ Implementation Notes
   https://github.com/adafruit/circuitpython/releases
 * Adafruit's Bus Device library: https://github.com/adafruit/Adafruit_CircuitPython_BusDevice
 """
+import struct
 from micropython import const
 
 from adafruit_bus_device import i2c_device
+
+try:
+    import typing  # pylint: disable=unused-import
+    from busio import I2C
+except ImportError:
+    pass
 
 
 __version__ = "0.0.0-auto.0"
@@ -49,6 +56,7 @@ _VL6180X_REG_RESULT_ALS_VAL = const(0x050)
 _VL6180X_REG_RESULT_RANGE_VAL = const(0x062)
 _VL6180X_REG_RESULT_RANGE_STATUS = const(0x04D)
 _VL6180X_REG_RESULT_INTERRUPT_STATUS_GPIO = const(0x04F)
+_VL6180X_REG_SYSRANGE_PART_TO_PART_RANGE_OFFSET = const(0x024)
 
 # User-facing constants:
 ALS_GAIN_1 = const(0x06)
@@ -85,15 +93,18 @@ class VL6180X:
                     default value will be assumed.
     """
 
-    def __init__(self, i2c, address=_VL6180X_DEFAULT_I2C_ADDR):
+    def __init__(
+        self, i2c: I2C, address: int = _VL6180X_DEFAULT_I2C_ADDR, offset: int = 0
+    ) -> None:
         self._device = i2c_device.I2CDevice(i2c, address)
         if self._read_8(_VL6180X_REG_IDENTIFICATION_MODEL_ID) != 0xB4:
             raise RuntimeError("Could not find VL6180X, is it connected and powered?")
         self._load_settings()
         self._write_8(_VL6180X_REG_SYSTEM_FRESH_OUT_OF_RESET, 0x00)
+        self.offset = offset
 
     @property
-    def range(self):
+    def range(self) -> int:
         """Read the range of an object in front of sensor and return it in mm."""
         # wait for device to be ready for range measurement
         while not self._read_8(_VL6180X_REG_RESULT_RANGE_STATUS) & 0x01:
@@ -109,7 +120,19 @@ class VL6180X:
         self._write_8(_VL6180X_REG_SYSTEM_INTERRUPT_CLEAR, 0x07)
         return range_
 
-    def read_lux(self, gain):
+    @property
+    def offset(self) -> int:
+        """Read and sets the manual offset for the sensor, in millimeters"""
+        return self._offset
+
+    @offset.setter
+    def offset(self, offset: int) -> None:
+        self._write_8(
+            _VL6180X_REG_SYSRANGE_PART_TO_PART_RANGE_OFFSET, struct.pack("b", offset)[0]
+        )
+        self._offset = offset
+
+    def read_lux(self, gain: int) -> float:
         """Read the lux (light value) from the sensor and return it.  Must
         specify the gain value to use for the lux reading:
         - ALS_GAIN_1 = 1x
@@ -164,7 +187,7 @@ class VL6180X:
         return lux
 
     @property
-    def range_status(self):
+    def range_status(self) -> int:
         """Retrieve the status/error from a previous range read.  This will
         return a constant value such as:
 
@@ -182,7 +205,7 @@ class VL6180X:
         """
         return self._read_8(_VL6180X_REG_RESULT_RANGE_STATUS) >> 4
 
-    def _load_settings(self):
+    def _load_settings(self) -> None:
         # private settings from page 24 of app note
         self._write_8(0x0207, 0x01)
         self._write_8(0x0208, 0x01)
@@ -238,12 +261,12 @@ class VL6180X:
         self._write_8(0x0014, 0x24)  # Configures interrupt on 'New Sample
         # Ready threshold event'
 
-    def _write_8(self, address, data):
+    def _write_8(self, address: int, data: int) -> None:
         # Write 1 byte of data from the specified 16-bit register address.
         with self._device:
             self._device.write(bytes([(address >> 8) & 0xFF, address & 0xFF, data]))
 
-    def _write_16(self, address, data):
+    def _write_16(self, address: int, data: int) -> None:
         # Write a 16-bit big endian value to the specified 16-bit register
         # address.
         with self._device as i2c:
@@ -258,7 +281,7 @@ class VL6180X:
                 )
             )
 
-    def _read_8(self, address):
+    def _read_8(self, address: int) -> int:
         # Read and return a byte from the specified 16-bit register address.
         with self._device as i2c:
             result = bytearray(1)
@@ -266,7 +289,7 @@ class VL6180X:
             i2c.readinto(result)
             return result[0]
 
-    def _read_16(self, address):
+    def _read_16(self, address: int) -> int:
         # Read and return a 16-bit unsigned big endian value read from the
         # specified 16-bit register address.
         with self._device as i2c:

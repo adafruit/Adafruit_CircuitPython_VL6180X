@@ -17,6 +17,9 @@ i2c = busio.I2C(board.SCL, board.SDA)
 
 # Create sensor instance.
 sensor = adafruit_vl6180x.VL6180X(i2c)
+# You can add an offset to distance measurements here (e.g. calibration)
+# Swapping for the following would add a +10 millimeter offset to measurements:
+# sensor = adafruit_vl6180x.VL6180X(i2c, offset=10)
 
 # Main loop prints the range and lux every second:
 while True:
