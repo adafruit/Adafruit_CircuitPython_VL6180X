@@ -3,7 +3,7 @@ Introduction
 ============
 
 .. image:: https://readthedocs.org/projects/adafruit-circuitpython-vl6180x/badge/?version=latest
-    :target: https://circuitpython.readthedocs.io/projects/vl6180x/en/latest/
+    :target: https://docs.circuitpython.org/projects/vl6180x/en/latest/
     :alt: Documentation Status
 
 .. image :: https://img.shields.io/discord/327254708534116352.svg
@@ -61,7 +61,7 @@ See examples/vl6180x_simpletest.py for a demo of the usage.
 Documentation
 =============
 
-API documentation for this library can be found on `Read the Docs <https://circuitpython.readthedocs.io/projects/vl6180x/en/latest/>`_.
+API documentation for this library can be found on `Read the Docs <https://docs.circuitpython.org/projects/vl6180x/en/latest/>`_.
 
 Contributing
 ============
