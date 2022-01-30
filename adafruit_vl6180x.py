@@ -26,7 +26,6 @@ Implementation Notes
 * Adafruit's Bus Device library: https://github.com/adafruit/Adafruit_CircuitPython_BusDevice
 """
 import struct
-import time
 
 from micropython import const
 
