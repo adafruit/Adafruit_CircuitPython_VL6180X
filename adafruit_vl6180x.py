@@ -34,7 +34,6 @@ from adafruit_bus_device import i2c_device
 
 try:
     import logging
-    import time
     from typing import Optional, List
     from busio import I2C
 except ImportError:
