@@ -9,7 +9,7 @@ Ensure your device works with this simple test.
 
 
 Calibration Test
-------------
+-----------------
 
 Demo of calibrating the part to part range offset per Application Note 4545 for the VL6180X sensor.
 
@@ -19,7 +19,7 @@ Demo of calibrating the part to part range offset per Application Note 4545 for 
 
 
 Continuous Test
-------------
+----------------
 
 Demo of reading the range from the VL6180x distance sensor in continuous mode.
 
@@ -29,7 +29,7 @@ Demo of reading the range from the VL6180x distance sensor in continuous mode.
 
 
 History Test
-------------
+-------------
 
 Demo of reading the range from the history buffer of the VL6180x distance sensor.
 
@@ -39,7 +39,7 @@ Demo of reading the range from the history buffer of the VL6180x distance sensor
 
 
 Performance Test
-------------
+-----------------
 
 Demo of reading the range from the VL6180x distance sensor in different access modes (single shot, continuous, history).
 
