@@ -26,6 +26,7 @@ Implementation Notes
 * Adafruit's Bus Device library: https://github.com/adafruit/Adafruit_CircuitPython_BusDevice
 """
 import struct
+import time
 
 from micropython import const
 
@@ -130,8 +131,8 @@ class VL6180X:
 
     @property
     def range_from_history(self) -> Optional[int]:
-        """ Read the latest range data from history
-        To do so, you don't have to wait for a complete measurement. """
+        """Read the latest range data from history
+        To do so, you don't have to wait for a complete measurement."""
 
         if not self.range_history_enabled:
             return None
@@ -145,7 +146,10 @@ class VL6180X:
         if not self.range_history_enabled:
             return None
 
-        return [self._read_8(_VL6180X_REG_RESULT_HISTORY_BUFFER_0 + age) for age in range(16)]
+        return [
+            self._read_8(_VL6180X_REG_RESULT_HISTORY_BUFFER_0 + age)
+            for age in range(16)
+        ]
 
     @property
     def range_history_enabled(self) -> bool:
@@ -154,17 +158,17 @@ class VL6180X:
         history_ctrl: int = self._read_8(_VL6180X_REG_SYSTEM_HISTORY_CTRL)
 
         if history_ctrl & 0x0:
-            logging.info('History buffering not enabled')
+            logging.info("History buffering not enabled")
             return False
 
         if (history_ctrl > 1) & 0x1:
-            logging.info('History buffer stores ALS data, not range')
+            logging.info("History buffer stores ALS data, not range")
             return False
 
         return True
 
     def start_range_continuous(self, period: int = 100) -> None:
-        """ Start continuous range mode
+        """Start continuous range mode
         :param period: Time delay between measurements in ms
         """
         # Set range between measurements
@@ -180,8 +184,8 @@ class VL6180X:
         self._write_8(_VL6180X_REG_SYSRANGE_START, 0x03)
 
     def stop_range_continuous(self) -> None:
-        """ Stop continuous range mode. It is advised to wait for about 0.3s
-        afterwards to avoid issues with the interrupt flags """
+        """Stop continuous range mode. It is advised to wait for about 0.3s
+        afterwards to avoid issues with the interrupt flags"""
         if self.continuous_mode_enabled:
             self._write_8(_VL6180X_REG_SYSRANGE_START, 0x01)
 

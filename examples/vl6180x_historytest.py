@@ -20,7 +20,7 @@ i2c = busio.I2C(board.SCL, board.SDA)
 sensor = adafruit_vl6180x.VL6180X(i2c)
 
 # Starting continuous mode
-print('Starting continuous mode')
+print("Starting continuous mode")
 sensor.start_range_continuous()
 
 # Main loop prints the ranges every 0.01 seconds for about 5 seconds

@@ -23,35 +23,44 @@ sensor = adafruit_vl6180x.VL6180X(i2c)
 n_measurements: int = 100
 
 # Single shot
-print('Starting single-shot measurement...')
+print("Starting single-shot measurement...")
 start = time.time()
 for i in range(n_measurements):
     range_mm = sensor.range
-print('Performed {} measurements in single-shot mode in {}s\n'
-      .format(n_measurements, time.time() - start))
+print(
+    "Performed {} measurements in single-shot mode in {}s\n".format(
+        n_measurements, time.time() - start
+    )
+)
 
 # Sleep is required, otherwise the sensor might freeze when switching to
 # continuous mode too quickly after the last single shot
 time.sleep(2)
 
 # Continuous with no delay between measurements
-print('Starting continuous measurement...')
+print("Starting continuous measurement...")
 sensor.start_range_continuous(0)
 start = time.time()
 for i in range(n_measurements):
     range_mm = sensor.range
-print('Performed {} measurements in continuous mode in {}s\n'
-      .format(n_measurements, time.time() - start))
+print(
+    "Performed {} measurements in continuous mode in {}s\n".format(
+        n_measurements, time.time() - start
+    )
+)
 
 # Continuous, reading data from history.
 # Note: This is fast, since you don't have to wait for the measurement to be
 # finished. On the downside, you will read the same value multiple times
-print('Starting continuous measurement with history enabled...')
+print("Starting continuous measurement with history enabled...")
 start = time.time()
 for i in range(n_measurements):
     range_mm = sensor.range_from_history
-print('Performed {} measurements in continuous mode, reading form history, in {}s\n'
-      .format(n_measurements, time.time() - start))
+print(
+    "Performed {} measurements in continuous mode, reading form history, in {}s\n".format(
+        n_measurements, time.time() - start
+    )
+)
 
 sensor.stop_range_continuous()
-print('Finished')
+print("Finished")
