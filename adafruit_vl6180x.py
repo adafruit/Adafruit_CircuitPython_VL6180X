@@ -33,7 +33,6 @@ from micropython import const
 from adafruit_bus_device import i2c_device
 
 try:
-    import logging
     from typing import Optional, List
     from busio import I2C
 except ImportError:
@@ -158,11 +157,11 @@ class VL6180X:
         history_ctrl: int = self._read_8(_VL6180X_REG_SYSTEM_HISTORY_CTRL)
 
         if history_ctrl & 0x0:
-            logging.info("History buffering not enabled")
+            print("History buffering not enabled")
             return False
 
         if (history_ctrl > 1) & 0x1:
-            logging.info("History buffer stores ALS data, not range")
+            print("History buffer stores ALS data, not range")
             return False
 
         return True
