@@ -5,7 +5,6 @@
 # distance sensor
 
 import time
-from typing import List
 
 import board
 import busio
@@ -26,8 +25,8 @@ sensor.start_range_continuous()
 # Main loop prints the ranges every 0.01 seconds for about 5 seconds
 # You should see changes 'ripple through' the history array
 for _ in range(500):
-    # Read the range in millimeters and print it.
-    ranges_mm: List[int] = sensor.ranges_from_history
+    # Read the last 16 ranges from the history buffer as a List[int]
+    ranges_mm = sensor.ranges_from_history
     print(ranges_mm)
 
     # Delay for 10 ms so that the loop is not too fast
