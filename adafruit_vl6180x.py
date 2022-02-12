@@ -9,7 +9,7 @@
 CircuitPython module for the VL6180X distance sensor.  See
 examples/simpletest.py for a demo of the usage.
 
-* Author(s): Tony DiCola
+* Author(s): Tony DiCola, Jonas Schatz
 
 Implementation Notes
 --------------------
@@ -26,12 +26,14 @@ Implementation Notes
 * Adafruit's Bus Device library: https://github.com/adafruit/Adafruit_CircuitPython_BusDevice
 """
 import struct
+import time
+
 from micropython import const
 
 from adafruit_bus_device import i2c_device
 
 try:
-    import typing  # pylint: disable=unused-import
+    from typing import Optional, List
     from busio import I2C
 except ImportError:
     pass
@@ -40,23 +42,31 @@ except ImportError:
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_VL6180X.git"
 
-
-# Internal constants:
-_VL6180X_DEFAULT_I2C_ADDR = const(0x29)
+# Registers
 _VL6180X_REG_IDENTIFICATION_MODEL_ID = const(0x000)
+
+_VL6180X_REG_SYSTEM_HISTORY_CTRL = const(0x012)
 _VL6180X_REG_SYSTEM_INTERRUPT_CONFIG = const(0x014)
 _VL6180X_REG_SYSTEM_INTERRUPT_CLEAR = const(0x015)
 _VL6180X_REG_SYSTEM_FRESH_OUT_OF_RESET = const(0x016)
+
 _VL6180X_REG_SYSRANGE_START = const(0x018)
+_VL6180X_REG_SYSRANGE_INTERMEASUREMENT_PERIOD = const(0x01B)
+_VL6180X_REG_SYSRANGE_PART_TO_PART_RANGE_OFFSET = const(0x024)
+
 _VL6180X_REG_SYSALS_START = const(0x038)
 _VL6180X_REG_SYSALS_ANALOGUE_GAIN = const(0x03F)
 _VL6180X_REG_SYSALS_INTEGRATION_PERIOD_HI = const(0x040)
 _VL6180X_REG_SYSALS_INTEGRATION_PERIOD_LO = const(0x041)
-_VL6180X_REG_RESULT_ALS_VAL = const(0x050)
-_VL6180X_REG_RESULT_RANGE_VAL = const(0x062)
+
 _VL6180X_REG_RESULT_RANGE_STATUS = const(0x04D)
 _VL6180X_REG_RESULT_INTERRUPT_STATUS_GPIO = const(0x04F)
-_VL6180X_REG_SYSRANGE_PART_TO_PART_RANGE_OFFSET = const(0x024)
+_VL6180X_REG_RESULT_ALS_VAL = const(0x050)
+_VL6180X_REG_RESULT_HISTORY_BUFFER_0 = const(0x052)
+_VL6180X_REG_RESULT_RANGE_VAL = const(0x062)
+
+# Internal constants:
+_VL6180X_DEFAULT_I2C_ADDR = const(0x29)
 
 # User-facing constants:
 ALS_GAIN_1 = const(0x06)
@@ -82,7 +92,7 @@ ERROR_RANGEOFLOW = const(15)
 
 
 class VL6180X:
-    """Create an instance of the VL6180X distance sensor.  You must pass in
+    """Create an instance of the VL6180X distance sensor. You must pass in
     the following parameters:
 
     :param i2c: An instance of the I2C bus connected to the sensor.
@@ -103,22 +113,85 @@ class VL6180X:
         self._write_8(_VL6180X_REG_SYSTEM_FRESH_OUT_OF_RESET, 0x00)
         self.offset = offset
 
+        # Reset a sensor that crashed while in continuous mode
+        if self.continuous_mode_enabled:
+            self.stop_range_continuous()
+            time.sleep(0.1)
+
+        # Activate history buffer for range measurement
+        self._write_8(_VL6180X_REG_SYSTEM_HISTORY_CTRL, 0x01)
+
     @property
     def range(self) -> int:
         """Read the range of an object in front of sensor and return it in mm."""
-        # wait for device to be ready for range measurement
-        while not self._read_8(_VL6180X_REG_RESULT_RANGE_STATUS) & 0x01:
-            pass
-        # Start a range measurement
-        self._write_8(_VL6180X_REG_SYSRANGE_START, 0x01)
-        # Poll until bit 2 is set
-        while not self._read_8(_VL6180X_REG_RESULT_INTERRUPT_STATUS_GPIO) & 0x04:
-            pass
-        # read range in mm
-        range_ = self._read_8(_VL6180X_REG_RESULT_RANGE_VAL)
-        # clear interrupt
-        self._write_8(_VL6180X_REG_SYSTEM_INTERRUPT_CLEAR, 0x07)
-        return range_
+        if self.continuous_mode_enabled:
+            return self._read_range_continuous()
+        return self._read_range_single()
+
+    @property
+    def range_from_history(self) -> Optional[int]:
+        """Read the latest range data from history
+        To do so, you don't have to wait for a complete measurement."""
+
+        if not self.range_history_enabled:
+            return None
+
+        return self._read_8(_VL6180X_REG_RESULT_HISTORY_BUFFER_0)
+
+    @property
+    def ranges_from_history(self) -> Optional[List[int]]:
+        """ Read the last 16 range measurements from history """
+
+        if not self.range_history_enabled:
+            return None
+
+        return [
+            self._read_8(_VL6180X_REG_RESULT_HISTORY_BUFFER_0 + age)
+            for age in range(16)
+        ]
+
+    @property
+    def range_history_enabled(self) -> bool:
+        """ Checks if history buffer stores range data """
+
+        history_ctrl: int = self._read_8(_VL6180X_REG_SYSTEM_HISTORY_CTRL)
+
+        if history_ctrl & 0x0:
+            print("History buffering not enabled")
+            return False
+
+        if (history_ctrl > 1) & 0x1:
+            print("History buffer stores ALS data, not range")
+            return False
+
+        return True
+
+    def start_range_continuous(self, period: int = 100) -> None:
+        """Start continuous range mode
+        :param period: Time delay between measurements in ms
+        """
+        # Set range between measurements
+        period_reg: int = 0
+        if period > 10:
+            if period < 2250:
+                period_reg = (period // 10) - 1
+            else:
+                period_reg = 254
+        self._write_8(_VL6180X_REG_SYSRANGE_INTERMEASUREMENT_PERIOD, period_reg)
+
+        # Start continuous range measurement
+        self._write_8(_VL6180X_REG_SYSRANGE_START, 0x03)
+
+    def stop_range_continuous(self) -> None:
+        """Stop continuous range mode. It is advised to wait for about 0.3s
+        afterwards to avoid issues with the interrupt flags"""
+        if self.continuous_mode_enabled:
+            self._write_8(_VL6180X_REG_SYSRANGE_START, 0x01)
+
+    @property
+    def continuous_mode_enabled(self) -> bool:
+        """ Checks if continuous mode is enabled """
+        return self._read_8(_VL6180X_REG_SYSRANGE_START) > 1 & 0x1
 
     @property
     def offset(self) -> int:
@@ -131,6 +204,28 @@ class VL6180X:
             _VL6180X_REG_SYSRANGE_PART_TO_PART_RANGE_OFFSET, struct.pack("b", offset)[0]
         )
         self._offset = offset
+
+    def _read_range_single(self) -> int:
+        """ Read the range when in single-shot mode"""
+        while not self._read_8(_VL6180X_REG_RESULT_RANGE_STATUS) & 0x01:
+            pass
+        self._write_8(_VL6180X_REG_SYSRANGE_START, 0x01)
+        return self._read_range_continuous()
+
+    def _read_range_continuous(self) -> int:
+        """ Read the range when in continuous mode"""
+
+        # Poll until bit 2 is set
+        while not self._read_8(_VL6180X_REG_RESULT_INTERRUPT_STATUS_GPIO) & 0x04:
+            pass
+
+        # read range in mm
+        range_ = self._read_8(_VL6180X_REG_RESULT_RANGE_VAL)
+
+        # clear interrupt
+        self._write_8(_VL6180X_REG_SYSTEM_INTERRUPT_CLEAR, 0x07)
+
+        return range_
 
     def read_lux(self, gain: int) -> float:
         """Read the lux (light value) from the sensor and return it.  Must

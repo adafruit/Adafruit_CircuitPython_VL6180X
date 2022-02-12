@@ -19,7 +19,7 @@ i2c = busio.I2C(board.SCL, board.SDA)
 sensor = adafruit_vl6180x.VL6180X(i2c, offset=0)
 
 # Place a target at 50mm away from VL6180X Collect a number of range measurements
-# with the target in place and calculate mean of the range reseults.  For a
+# with the target in place and calculate mean of the range results.  For a
 # reliable measurement, take at least 10 measurements.
 measurements = []
 for msmt in range(10):
