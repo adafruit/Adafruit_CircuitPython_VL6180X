@@ -95,12 +95,13 @@ class VL6180X:
     """Create an instance of the VL6180X distance sensor. You must pass in
     the following parameters:
 
-    :param i2c: An instance of the I2C bus connected to the sensor.
+    :param ~I2C i2c: An instance of the I2C bus connected to the sensor.
 
     Optionally you can specify:
 
-    :param address: The I2C address of the sensor.  If not specified the sensor's
+    :param int address: The I2C address of the sensor.  If not specified the sensor's
                     default value will be assumed.
+    :param int offset: The offset to be applied to measurements, in mm
     """
 
     def __init__(
@@ -168,7 +169,8 @@ class VL6180X:
 
     def start_range_continuous(self, period: int = 100) -> None:
         """Start continuous range mode
-        :param period: Time delay between measurements in ms
+
+        :param int period: Time delay between measurements, in milliseconds
         """
         # Set range between measurements
         period_reg: int = 0
@@ -238,6 +240,8 @@ class VL6180X:
         - ALS_GAIN_10 = 10x
         - ALS_GAIN_20 = 20x
         - ALS_GAIN_40 = 40x
+
+        :param int gain: The gain value to use
         """
         reg = self._read_8(_VL6180X_REG_SYSTEM_INTERRUPT_CONFIG)
         reg &= ~0x38
