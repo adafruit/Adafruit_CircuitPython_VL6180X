@@ -232,16 +232,22 @@ class VL6180X:
     def read_lux(self, gain: int) -> float:
         """Read the lux (light value) from the sensor and return it.  Must
         specify the gain value to use for the lux reading:
-        - ALS_GAIN_1 = 1x
-        - ALS_GAIN_1_25 = 1.25x
-        - ALS_GAIN_1_67 = 1.67x
-        - ALS_GAIN_2_5 = 2.5x
-        - ALS_GAIN_5 = 5x
-        - ALS_GAIN_10 = 10x
-        - ALS_GAIN_20 = 20x
-        - ALS_GAIN_40 = 40x
+
+        =================  =====
+             Setting       Value
+        =================  =====
+        ``ALS_GAIN_1``     1x
+        ``ALS_GAIN_1_25``  1.25x
+        ``ALS_GAIN_1_67``  1.67x
+        ``ALS_GAIN_2_5``   2.5x
+        ``ALS_GAIN_5``     5x
+        ``ALS_GAIN_10``    10x
+        ``ALS_GAIN_20``    20x
+        ``ALS_GAIN_40``    40x
+        =================  =====
 
         :param int gain: The gain value to use
+
         """
         reg = self._read_8(_VL6180X_REG_SYSTEM_INTERRUPT_CONFIG)
         reg &= ~0x38
@@ -290,17 +296,22 @@ class VL6180X:
         """Retrieve the status/error from a previous range read.  This will
         return a constant value such as:
 
-        - ERROR_NONE - No error
-        - ERROR_SYSERR_1 - System error 1 (see datasheet)
-        - ERROR_SYSERR_5 - System error 5 (see datasheet)
-        - ERROR_ECEFAIL - ECE failure
-        - ERROR_NOCONVERGE - No convergence
-        - ERROR_RANGEIGNORE - Outside range ignored
-        - ERROR_SNR - Too much noise
-        - ERROR_RAWUFLOW - Raw value underflow
-        - ERROR_RAWOFLOW - Raw value overflow
-        - ERROR_RANGEUFLOW - Range underflow
-        - ERROR_RANGEOFLOW - Range overflow
+        =====================  ==============================
+                Error                   Description
+        =====================  ==============================
+        ``ERROR_NONE``         No error
+        ``ERROR_SYSERR_1``     System error 1 (see datasheet)
+        ``ERROR_SYSERR_5``     System error 5 (see datasheet)
+        ``ERROR_ECEFAIL``      ECE failure
+        ``ERROR_NOCONVERGE``   No convergence
+        ``ERROR_RANGEIGNORE``  Outside range ignored
+        ``ERROR_SNR``          Too much noise
+        ``ERROR_RAWUFLOW``     Raw value underflow
+        ``ERROR_RAWOFLOW``     Raw value overflow
+        ``ERROR_RANGEUFLOW``   Range underflow
+        ``ERROR_RANGEOFLOW``   Range overflow
+        =====================  ==============================
+
         """
         return self._read_8(_VL6180X_REG_RESULT_RANGE_STATUS) >> 4
 
