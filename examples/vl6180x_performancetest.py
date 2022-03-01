@@ -39,7 +39,7 @@ time.sleep(2)
 
 # Continuous with no delay between measurements
 print("Starting continuous measurement...")
-sensor.start_range_continuous(0)
+sensor.start_range_continuous(20)
 start = time.time()
 for i in range(n_measurements):
     range_mm = sensor.range
