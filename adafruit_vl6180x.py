@@ -170,8 +170,9 @@ class VL6180X:
     def start_range_continuous(self, period: int = 100) -> None:
         """Start continuous range mode
 
-        :param int period: Time delay between measurements, in milliseconds; the value you will be floored
-            to the nearest 10 milliseconds (setting to 157 ms sets it to 150 ms).  Range is 10 - 2550 ms.
+        :param int period: Time delay between measurements, in milliseconds; the value you
+            will be floored to the nearest 10 milliseconds (setting to 157 ms sets it to 150
+            ms). Range is 10 - 2550 ms.
         """
         # Set range between measurements
         if not 10 <= period <= 2550:
