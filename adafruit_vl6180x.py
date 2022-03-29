@@ -141,7 +141,7 @@ class VL6180X:
 
     @property
     def ranges_from_history(self) -> Optional[List[int]]:
-        """ Read the last 16 range measurements from history """
+        """Read the last 16 range measurements from history"""
 
         if not self.range_history_enabled:
             return None
@@ -153,7 +153,7 @@ class VL6180X:
 
     @property
     def range_history_enabled(self) -> bool:
-        """ Checks if history buffer stores range data """
+        """Checks if history buffer stores range data"""
 
         history_ctrl: int = self._read_8(_VL6180X_REG_SYSTEM_HISTORY_CTRL)
 
@@ -192,7 +192,7 @@ class VL6180X:
 
     @property
     def continuous_mode_enabled(self) -> bool:
-        """ Checks if continuous mode is enabled """
+        """Checks if continuous mode is enabled"""
         return self._read_8(_VL6180X_REG_SYSRANGE_START) > 1 & 0x1
 
     @property
@@ -208,14 +208,14 @@ class VL6180X:
         self._offset = offset
 
     def _read_range_single(self) -> int:
-        """ Read the range when in single-shot mode"""
+        """Read the range when in single-shot mode"""
         while not self._read_8(_VL6180X_REG_RESULT_RANGE_STATUS) & 0x01:
             pass
         self._write_8(_VL6180X_REG_SYSRANGE_START, 0x01)
         return self._read_range_continuous()
 
     def _read_range_continuous(self) -> int:
-        """ Read the range when in continuous mode"""
+        """Read the range when in continuous mode"""
 
         # Poll until bit 2 is set
         while not self._read_8(_VL6180X_REG_RESULT_INTERRUPT_STATUS_GPIO) & 0x04:
