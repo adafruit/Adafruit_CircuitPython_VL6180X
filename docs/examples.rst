@@ -46,3 +46,12 @@ Demo of reading the range from the VL6180x distance sensor in different access m
 .. literalinclude:: ../examples/vl6180x_performancetest.py
     :caption: examples/vl6180x_performancetest.py
     :linenos:
+
+DisplayIO Simpletest
+---------------------
+
+This is a simple test for boards with built-in display.
+
+.. literalinclude:: ../examples/vl6180x_displayio_simpletest.py
+    :caption: examples/vl6180x_displayio_simpletest.py
+    :linenos:
