@@ -172,12 +172,12 @@ class VL6180X:
 
         :param int period: Time delay between measurements, in milliseconds; the value you
             will be floored to the nearest 10 milliseconds (setting to 157 ms sets it to 150
-            ms). Range is 10 - 2550 ms.
+            ms). Range is 20 - 2550 ms.
         """
         # Set range between measurements
-        if not 10 <= period <= 2550:
+        if not 20 <= period <= 2550:
             raise ValueError(
-                "Delay must be in 10 millisecond increments between 10 and 2550 milliseconds"
+                "Delay must be in 10 millisecond increments between 20 and 2550 milliseconds"
             )
 
         period_reg = (period // 10) - 1
