@@ -4,10 +4,12 @@
 # SPDX-License-Identifier: MIT
 
 import time
+
 import board
 from adafruit_display_text.bitmap_label import Label
-from terminalio import FONT
 from displayio import Group
+from terminalio import FONT
+
 import adafruit_vl6180x
 
 # Simple demo of the vl6180x distance sensor.
@@ -43,8 +45,6 @@ board.DISPLAY.root_group = main_group
 while True:
     # Update the label.text property to change the text on the display
     range_output_label.text = f"Range:{sensor.range} mm"
-    light_lux_output_label.text = (
-        f"Lux:{sensor.read_lux(adafruit_vl6180x.ALS_GAIN_1)} lux"
-    )
+    light_lux_output_label.text = f"Lux:{sensor.read_lux(adafruit_vl6180x.ALS_GAIN_1)} lux"
     # wait for a bit
     time.sleep(1.0)

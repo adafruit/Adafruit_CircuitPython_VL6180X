@@ -11,7 +11,6 @@ import busio
 
 import adafruit_vl6180x
 
-
 # Create I2C bus.
 i2c = busio.I2C(board.SCL, board.SDA)
 

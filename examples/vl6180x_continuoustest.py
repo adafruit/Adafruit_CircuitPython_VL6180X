@@ -11,7 +11,6 @@ import busio
 
 import adafruit_vl6180x
 
-
 # Create I2C bus.
 i2c = busio.I2C(board.SCL, board.SDA)
 
@@ -26,7 +25,7 @@ sensor.start_range_continuous(20)
 for _ in range(100):
     # Read the range in millimeters and print it.
     range_mm = sensor.range
-    print("Range: {0}mm".format(range_mm))
+    print(f"Range: {range_mm}mm")
 
     # Delay for 10 ms
     time.sleep(0.01)
