@@ -25,15 +25,16 @@ Implementation Notes
   https://github.com/adafruit/circuitpython/releases
 * Adafruit's Bus Device library: https://github.com/adafruit/Adafruit_CircuitPython_BusDevice
 """
+
 import struct
 import time
 
+from adafruit_bus_device import i2c_device
 from micropython import const
 
-from adafruit_bus_device import i2c_device
-
 try:
-    from typing import Optional, List
+    from typing import List, Optional
+
     from busio import I2C
 except ImportError:
     pass
@@ -104,9 +105,7 @@ class VL6180X:
     :param int offset: The offset to be applied to measurements, in mm
     """
 
-    def __init__(
-        self, i2c: I2C, address: int = _VL6180X_DEFAULT_I2C_ADDR, offset: int = 0
-    ) -> None:
+    def __init__(self, i2c: I2C, address: int = _VL6180X_DEFAULT_I2C_ADDR, offset: int = 0) -> None:
         self._device = i2c_device.I2CDevice(i2c, address)
         if self._read_8(_VL6180X_REG_IDENTIFICATION_MODEL_ID) != 0xB4:
             raise RuntimeError("Could not find VL6180X, is it connected and powered?")
@@ -146,10 +145,7 @@ class VL6180X:
         if not self.range_history_enabled:
             return None
 
-        return [
-            self._read_8(_VL6180X_REG_RESULT_HISTORY_BUFFER_0 + age)
-            for age in range(16)
-        ]
+        return [self._read_8(_VL6180X_REG_RESULT_HISTORY_BUFFER_0 + age) for age in range(16)]
 
     @property
     def range_history_enabled(self) -> bool:
@@ -204,9 +200,7 @@ class VL6180X:
 
     @offset.setter
     def offset(self, offset: int) -> None:
-        self._write_8(
-            _VL6180X_REG_SYSRANGE_PART_TO_PART_RANGE_OFFSET, struct.pack("b", offset)[0]
-        )
+        self._write_8(_VL6180X_REG_SYSRANGE_PART_TO_PART_RANGE_OFFSET, struct.pack("b", offset)[0])
         self._offset = offset
 
     def _read_range_single(self) -> int:
@@ -264,9 +258,7 @@ class VL6180X:
         # start ALS
         self._write_8(_VL6180X_REG_SYSALS_START, 0x1)
         # Poll until "New Sample Ready threshold event" is set
-        while (
-            (self._read_8(_VL6180X_REG_RESULT_INTERRUPT_STATUS_GPIO) >> 3) & 0x7
-        ) != 4:
+        while ((self._read_8(_VL6180X_REG_RESULT_INTERRUPT_STATUS_GPIO) >> 3) & 0x7) != 4:
             pass
         # read lux!
         lux = self._read_16(_VL6180X_REG_RESULT_ALS_VAL)

@@ -11,7 +11,6 @@ import busio
 
 import adafruit_vl6180x
 
-
 # Create I2C bus.
 i2c = busio.I2C(board.SCL, board.SDA)
 
@@ -27,11 +26,7 @@ print("Starting single-shot measurement...")
 start = time.time()
 for i in range(n_measurements):
     range_mm = sensor.range
-print(
-    "Performed {} measurements in single-shot mode in {}s\n".format(
-        n_measurements, time.time() - start
-    )
-)
+print(f"Performed {n_measurements} measurements in single-shot mode in {time.time() - start}s\n")
 
 # Sleep is required, otherwise the sensor might freeze when switching to
 # continuous mode too quickly after the last single shot
@@ -43,11 +38,7 @@ sensor.start_range_continuous(20)
 start = time.time()
 for i in range(n_measurements):
     range_mm = sensor.range
-print(
-    "Performed {} measurements in continuous mode in {}s\n".format(
-        n_measurements, time.time() - start
-    )
-)
+print(f"Performed {n_measurements} measurements in continuous mode in {time.time() - start}s\n")
 
 # Continuous, reading data from history.
 # Note: This is fast, since you don't have to wait for the measurement to be
@@ -57,9 +48,7 @@ start = time.time()
 for i in range(n_measurements):
     range_mm = sensor.range_from_history
 print(
-    "Performed {} measurements in continuous mode, reading form history, in {}s\n".format(
-        n_measurements, time.time() - start
-    )
+    f"Performed {n_measurements} measurements in continuous mode, reading form history, in {time.time() - start}s\n"  # noqa: E501
 )
 
 sensor.stop_range_continuous()
